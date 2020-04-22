@@ -37,7 +37,9 @@ public class Solver {
         final int MAXITR = 1000000;
         if (initial == null) throw new IllegalArgumentException();
         MinPQ<SNode> pqboards = new MinPQ<>();
+        MinPQ<SNode> pqboardsTwin = new MinPQ<>();
         pqboards.insert(new SNode(initial, null, 0));
+        pqboardsTwin.insert(new SNode(initial.twin(), null, 0));
         int itr = 0;
         boolean debugMode = false;
         while (itr < MAXITR) {
@@ -56,6 +58,18 @@ public class Solver {
                 if (node.prevNode != null) if (nextNode.equals(node.prevNode.board)) continue;
                 int newMove = node.moves + 1;
                 pqboards.insert(new SNode(nextNode, node, newMove));
+            }
+            SNode nodeT = pqboardsTwin.delMin();
+            if (nodeT.board.isGoal()) {
+                solutionNode = null;
+                moveSteps = -1;
+                System.out.println("The problem is infeasible!");
+                return;
+            }
+            for (Board nextNode : nodeT.board.neighbors()) {
+                if (nodeT.prevNode != null) if (nextNode.equals(nodeT.prevNode.board)) continue;
+                int newMove = nodeT.moves + 1;
+                pqboardsTwin.insert(new SNode(nextNode, nodeT, newMove));
             }
             itr++;
         }
