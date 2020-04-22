@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Board {
     private final int n;
     private final int[] tilesVec;
-    private final int[] positionMat;
+    private int zeroPosition = -1;
     private int hammingScore = -1;
     private int manhattanScore = -1;
 
@@ -19,13 +19,12 @@ public class Board {
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
         n = tiles.length;
-        positionMat = new int[n * n];
         tilesVec = new int[n * n];
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
                 int index = getIndex(i, j);
                 tilesVec[index] = tiles[i][j];
-                positionMat[tilesVec[index]] = index;
+                if (tilesVec[index] == 0) zeroPosition = index;
             }
         }
     }
@@ -62,7 +61,6 @@ public class Board {
             if (tilesVec[i] != solutionValue) hammingScore++;
         }
         return hammingScore;
-
     }
 
     // sum of Manhattan distances between tiles and goal
@@ -70,10 +68,10 @@ public class Board {
         if (manhattanScore >= 0) return manhattanScore;
         manhattanScore = 0;
         for (int i = 0; i < n * n - 1; ++i) {
-            int solutionValue = i + 1;
-            int currentPosition = positionMat[solutionValue];
-            int diffCol = Math.abs(currentPosition % n - i % n);
-            int diffRow = Math.abs(currentPosition / n - i / n);
+            int optimalPosition = tilesVec[i] - 1;
+            if (optimalPosition == -1) continue; //skip value 0;
+            int diffCol = Math.abs(optimalPosition % n - i % n);
+            int diffRow = Math.abs(optimalPosition / n - i / n);
             manhattanScore += diffCol + diffRow;
         }
         return manhattanScore;
@@ -95,8 +93,6 @@ public class Board {
     }
 
     private int dManhatanScoreNeibour(int dRow, int dCol) {
-        // int targetPosition = positionMat[targetVal];
-        int zeroPosition = positionMat[0];
         int zeroRow = zeroPosition / n;
         int zeroColumn = zeroPosition % n;
         int tileIdx = getIndex(zeroRow + dRow, zeroColumn + dCol);
@@ -111,10 +107,8 @@ public class Board {
 
     private int dHammingScoreNeibour(int tileIdx) {
         int targetVal = tilesVec[tileIdx];
-        int targetPosition = positionMat[targetVal];
-        int zeroPosition = positionMat[0];
         int solutionValatZeroPosition = zeroPosition + 1;
-        int solutionValatTargetPosition = (targetPosition + 1) % (n * n);
+        int solutionValatTargetPosition = (tileIdx + 1) % (n * n);
         if (solutionValatZeroPosition == targetVal) return -1;
         if (solutionValatTargetPosition == targetVal) return 1;
         return 0;
@@ -124,10 +118,8 @@ public class Board {
     public Iterable<Board> neighbors() {
         ArrayList<Board> boards;
         boards = new ArrayList<Board>();
-        int positionZero = positionMat[0];
-        int zeroRow = positionZero / dimension();
-
-        int zeroColumn = positionZero % dimension();
+        int zeroRow = zeroPosition / dimension();
+        int zeroColumn = zeroPosition % dimension();
         if (zeroRow != 0) {
             int[][] newTiles = new int[dimension()][dimension()];
             for (int i = 0; i < dimension(); ++i)
