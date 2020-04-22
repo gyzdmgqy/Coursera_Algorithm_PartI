@@ -11,22 +11,24 @@ import java.util.ArrayList;
 public class Board {
     private final int n;
     private final int[] tilesVec;
-    private int zeroPosition = -1;
+    private final int zeroPosition;
     private int hammingScore = -1;
     private int manhattanScore = -1;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
+        int localZeroPosition = -1;
         n = tiles.length;
         tilesVec = new int[n * n];
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
                 int index = getIndex(i, j);
                 tilesVec[index] = tiles[i][j];
-                if (tilesVec[index] == 0) zeroPosition = index;
+                if (tilesVec[index] == 0) localZeroPosition = index;
             }
         }
+        zeroPosition = localZeroPosition;
     }
 
     private int getIndex(int row, int col) {
@@ -127,7 +129,6 @@ public class Board {
             newTiles[zeroRow][zeroColumn] = newTiles[zeroRow - 1][zeroColumn];
             newTiles[zeroRow - 1][zeroColumn] = 0;
             Board newBoard = new Board(newTiles);
-            int hscore = hamming();
             newBoard.manhattanScore = manhattan() + dManhatanScoreNeibour(-1, 0);
             newBoard.hammingScore = hamming() + dHammingScoreNeibour(
                     getIndex(zeroRow - 1, zeroColumn));
@@ -140,7 +141,6 @@ public class Board {
             newTiles[zeroRow][zeroColumn] = newTiles[zeroRow + 1][zeroColumn];
             newTiles[zeroRow + 1][zeroColumn] = 0;
             Board newBoard = new Board(newTiles);
-            int hscore = hamming();
             newBoard.manhattanScore = manhattan() + dManhatanScoreNeibour(1, 0);
             newBoard.hammingScore = hamming() + dHammingScoreNeibour(
                     getIndex(zeroRow + 1, zeroColumn));
@@ -153,7 +153,6 @@ public class Board {
             newTiles[zeroRow][zeroColumn] = newTiles[zeroRow][zeroColumn - 1];
             newTiles[zeroRow][zeroColumn - 1] = 0;
             Board newBoard = new Board(newTiles);
-            int hscore = hamming();
             newBoard.manhattanScore = manhattan() + dManhatanScoreNeibour(0, -1);
             newBoard.hammingScore = hamming() + dHammingScoreNeibour(
                     getIndex(zeroRow, zeroColumn - 1));
@@ -167,7 +166,6 @@ public class Board {
             newTiles[zeroRow][zeroColumn + 1] = 0;
             Board newBoard = new Board(newTiles);
             newBoard.manhattanScore = manhattan() + dManhatanScoreNeibour(0, 1);
-            int hscore = hamming();
             newBoard.hammingScore = hamming() + dHammingScoreNeibour(
                     getIndex(zeroRow, zeroColumn + 1));
             boards.add(newBoard);

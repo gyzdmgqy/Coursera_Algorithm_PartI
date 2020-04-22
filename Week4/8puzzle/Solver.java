@@ -10,7 +10,7 @@ import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
-    private int moveSteps = -1;
+    private int moveSteps;
     private SNode solutionNode;
 
     private class SNode implements Comparable<SNode> {
