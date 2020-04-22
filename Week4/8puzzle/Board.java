@@ -67,7 +67,7 @@ public class Board {
     public int manhattan() {
         if (manhattanScore >= 0) return manhattanScore;
         manhattanScore = 0;
-        for (int i = 0; i < n * n - 1; ++i) {
+        for (int i = 0; i < n * n; ++i) {
             int optimalPosition = tilesVec[i] - 1;
             if (optimalPosition == -1) continue; //skip value 0;
             int diffCol = Math.abs(optimalPosition % n - i % n);
