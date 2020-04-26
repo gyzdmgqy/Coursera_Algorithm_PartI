@@ -49,12 +49,12 @@ public class KdTree {
         while (current != null) {
             if (current.p.equals(p)) return true;
             if (isHorizontal) {
-                if (current.p.y() >= p.y()) current = current.rt;
-                else current = current.lb;
+                if (current.p.y() > p.y()) current = current.lb;
+                else current = current.rt;
             }
             else {
-                if (current.p.x() >= p.x()) current = current.rt;
-                else current = current.lb;
+                if (current.p.x() > p.x()) current = current.lb;
+                else current = current.rt;
             }
             isHorizontal = !isHorizontal;
         }
@@ -85,7 +85,10 @@ public class KdTree {
         stack.push(root);
         while (!stack.isEmpty()) {
             Node current = stack.pop();
+            double distanceRECT = current.rect.distanceSquaredTo(p);
+            if (distanceRECT >= nearestDistance) continue;
             double distance = current.p.distanceSquaredTo(p);
+            //System.out.println(current.p.toString());
             if (distance < nearestDistance) {
                 nearestDistance = distance;
                 nearestPoint = current.p;
@@ -119,8 +122,8 @@ public class KdTree {
 
 
     private static class Node {
-        private Point2D p;      // the point
-        private RectHV rect;    // the axis-aligned rectangle corresponding to this node
+        private final Point2D p;      // the point
+        private final RectHV rect;    // the axis-aligned rectangle corresponding to this node
         private Node lb;        // the left/bottom subtree
         private Node rt;        // the right/top subtree
 
@@ -195,7 +198,6 @@ public class KdTree {
         // initialize the two data structures with point from file
         String filename = args[0];
         In in = new In(filename);
-        PointSET brute = new PointSET();
         KdTree kdtree = new KdTree();
         while (!in.isEmpty()) {
             double x = in.readDouble();
@@ -204,6 +206,7 @@ public class KdTree {
             kdtree.insert(p);
             StdOut.println("size:" + kdtree.size());
         }
-
+        StdOut.println(kdtree.contains(new Point2D(0.2, 0.3)));
+        StdOut.println(kdtree.nearest(new Point2D(0.06, 0.96)));
     }
 }

@@ -4,14 +4,16 @@
  *  Description:Brute-force implementation. Write a mutable data type PointSET.java that represents a set of points in the unit square. Implement the following API by using a red–black BST:
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
 
 public class PointSET {
-    private TreeSet<Point2D> bst;
+    private final TreeSet<Point2D> bst;
 
     public PointSET()                               // construct an empty set of points
     {
@@ -76,7 +78,15 @@ public class PointSET {
     public static void main(
             String[] args)                  // unit testing of the methods (optional)
     {
-        int a = 0;
-        return;
+        String filename = args[0];
+        In in = new In(filename);
+        PointSET kdtree = new PointSET();
+        while (!in.isEmpty()) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            Point2D p = new Point2D(x, y);
+            kdtree.insert(p);
+            StdOut.println("size:" + kdtree.size());
+        }
     }
 }
