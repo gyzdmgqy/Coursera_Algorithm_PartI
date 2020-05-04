@@ -15,6 +15,7 @@ import java.util.HashMap;
 
 public class SAP {
     private final Digraph digraph;
+    private final boolean debug = false;
 
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
@@ -55,27 +56,41 @@ public class SAP {
         HashMap<Integer, Integer> vLength = new HashMap<>();
         HashMap<Integer, Integer> wLength = new HashMap<>();
         HashMap<Integer, Integer> markedDic = new HashMap<>();
+        int vsample = 0;
+        int wsample = 0;
         for (Integer vertex : v) {
             sapQueue.enqueue(vertex);
             sapQueueVorW.enqueue(true);
             vLength.put(vertex, 0);
+            vsample = vertex;
         }
         for (Integer vertex : w) {
             sapQueue.enqueue(vertex);
             sapQueueVorW.enqueue(false);
             wLength.put(vertex, 0);
+            wsample = vertex;
         }
         Integer curVlen = -1;
         Integer curWlen = -1;
         int totalDistance = digraph.V() * 2;
         int ancestry = -1;
+        int iteration = 0;
 
 
         while (!sapQueue.isEmpty()) {
+            iteration++;
+            if (iteration > 100000) {
+                StdOut.println(String.format("input %d %d iteration %d", vsample, wsample,
+                                             iteration));
+                break;
+            }
             boolean isV = sapQueueVorW.dequeue();
             int currentVertex = sapQueue.dequeue();
             int markValue = markedDic.containsKey(currentVertex) ?
                             markedDic.get(currentVertex) : -1;
+            if (debug) StdOut.println(
+                    String.format("isV %b currentVertex %d markValue %d iteration %d", isV,
+                                  currentVertex, markValue, iteration));
             if (isV) {
                 curVlen = vLength.get(currentVertex);
                 if (curVlen > totalDistance) continue;
@@ -85,10 +100,10 @@ public class SAP {
                     if (distance < totalDistance) {
                         ancestry = currentVertex;
                         totalDistance = distance;
-                        markedDic.put(currentVertex, BOTHMARK);
                     }
+                    markedDic.put(currentVertex, BOTHMARK);
                 }
-                markedDic.put(currentVertex, VMARK);
+                else markedDic.put(currentVertex, VMARK);
                 for (Integer adjV : digraph.adj(currentVertex)) {
                     sapQueue.enqueue(adjV);
                     sapQueueVorW.enqueue(true);
@@ -101,16 +116,15 @@ public class SAP {
                 if (curWlen > totalDistance) continue;
                 // if current vertex has already been visited by W.
                 if (markValue == WMARK || markValue == BOTHMARK) continue;
-
                 if (markValue == VMARK) { // this has also been visited by V
                     int distance = curWlen + vLength.get(currentVertex);
                     if (distance < totalDistance) {
                         ancestry = currentVertex;
                         totalDistance = distance;
-                        markedDic.put(currentVertex, BOTHMARK);
                     }
+                    markedDic.put(currentVertex, BOTHMARK);
                 }
-                markedDic.put(currentVertex, WMARK);
+                else markedDic.put(currentVertex, WMARK);
                 for (Integer adjW : digraph.adj(currentVertex)) {
                     sapQueue.enqueue(adjW);
                     sapQueueVorW.enqueue(false);
@@ -123,7 +137,6 @@ public class SAP {
             result[1] = totalDistance;
         }
         return result;
-
     }
 
     private static boolean containNull(Iterable<Integer> itr) {
