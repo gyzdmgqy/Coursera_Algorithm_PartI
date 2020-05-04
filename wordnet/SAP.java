@@ -47,6 +47,7 @@ public class SAP {
         if (containNull(v) || containNull(w)) throw new IllegalArgumentException();
         final int VMARK = 1;
         final int WMARK = 2;
+        final int BOTHMARK = 3;
         int[] result = new int[2];
         for (int i = 0; i < result.length; ++i) result[i] = -1;
         Queue<Integer> sapQueue = new Queue<>();
@@ -73,48 +74,47 @@ public class SAP {
         while (!sapQueue.isEmpty()) {
             boolean isV = sapQueueVorW.dequeue();
             int currentVertex = sapQueue.dequeue();
+            int markValue = markedDic.containsKey(currentVertex) ?
+                            markedDic.get(currentVertex) : -1;
             if (isV) {
                 curVlen = vLength.get(currentVertex);
                 if (curVlen > totalDistance) continue;
-                if (markedDic.containsKey(currentVertex)) { // if current V vertex has been visited
-                    Integer markValue = markedDic.get(currentVertex);
-                    if (markValue == WMARK) {
-                        int distance = curVlen + wLength.get(currentVertex);
-                        if (distance < totalDistance) {
-                            ancestry = currentVertex;
-                            totalDistance = distance;
-                        }
+                if (markValue == VMARK || markValue == BOTHMARK) continue;
+                if (markValue == WMARK) {
+                    int distance = curVlen + wLength.get(currentVertex);
+                    if (distance < totalDistance) {
+                        ancestry = currentVertex;
+                        totalDistance = distance;
+                        markedDic.put(currentVertex, BOTHMARK);
                     }
                 }
-                else { // if current V vertex has NOT been visited
-                    markedDic.put(currentVertex, VMARK);
-                    for (Integer adjV : digraph.adj(currentVertex)) {
-                        sapQueue.enqueue(adjV);
-                        sapQueueVorW.enqueue(true);
-                        if (!vLength.containsKey(adjV)) vLength.put(adjV, curVlen + 1);
-                    }
+                markedDic.put(currentVertex, VMARK);
+                for (Integer adjV : digraph.adj(currentVertex)) {
+                    sapQueue.enqueue(adjV);
+                    sapQueueVorW.enqueue(true);
+                    if (!vLength.containsKey(adjV)) vLength.put(adjV, curVlen + 1);
                 }
+
             }
             else {
                 curWlen = wLength.get(currentVertex);
                 if (curWlen > totalDistance) continue;
-                if (markedDic.containsKey(currentVertex)) { // if current V vertex has been visited
-                    Integer markValue = markedDic.get(currentVertex);
-                    if (markValue == VMARK) { // this has also been visited by V
-                        int distance = curWlen + vLength.get(currentVertex);
-                        if (distance < totalDistance) {
-                            ancestry = currentVertex;
-                            totalDistance = distance;
-                        }
+                // if current vertex has already been visited by W.
+                if (markValue == WMARK || markValue == BOTHMARK) continue;
+
+                if (markValue == VMARK) { // this has also been visited by V
+                    int distance = curWlen + vLength.get(currentVertex);
+                    if (distance < totalDistance) {
+                        ancestry = currentVertex;
+                        totalDistance = distance;
+                        markedDic.put(currentVertex, BOTHMARK);
                     }
                 }
-                else { // if current W vertex has NOT been visited
-                    markedDic.put(currentVertex, WMARK);
-                    for (Integer adjW : digraph.adj(currentVertex)) {
-                        sapQueue.enqueue(adjW);
-                        sapQueueVorW.enqueue(false);
-                        if (!wLength.containsKey(adjW)) wLength.put(adjW, curWlen + 1);
-                    }
+                markedDic.put(currentVertex, WMARK);
+                for (Integer adjW : digraph.adj(currentVertex)) {
+                    sapQueue.enqueue(adjW);
+                    sapQueueVorW.enqueue(false);
+                    if (!wLength.containsKey(adjW)) wLength.put(adjW, curWlen + 1);
                 }
             }
         }
