@@ -14,8 +14,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SAP {
+    private static boolean debug = false;
     private final Digraph digraph;
-    private final boolean debug = false;
+
 
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
