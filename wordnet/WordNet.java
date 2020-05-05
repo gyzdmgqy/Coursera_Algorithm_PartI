@@ -5,7 +5,9 @@
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +45,7 @@ public class WordNet {
             }
         }
         synsetFile.close();
-        Digraph digraph = new Digraph(word2Ids.size());
+        Digraph digraph = new Digraph(iD2Synset.size());
         In hyperFile = new In(hypernyms);
         while (hyperFile.hasNextLine()) {
             String[] idlines = hyperFile.readLine().split(",");
@@ -53,9 +55,23 @@ public class WordNet {
                 digraph.addEdge(synsetid, hyperid);
             }
         }
+        if (!isDAG(digraph)) throw new IllegalArgumentException();
         hyperFile.close();
         sap = new SAP(digraph);
 
+    }
+
+    private static boolean isDAG(Digraph digraph) {
+        DirectedCycle diCycle = new DirectedCycle(digraph);
+        if (diCycle.hasCycle()) return false;
+        int rootCount = 0;
+        for (int v = 0; v < digraph.V(); ++v) {
+            if (digraph.outdegree(v) == 0)
+                rootCount++;
+            if (rootCount > 1)
+                return false;
+        }
+        return true;
     }
 
 
@@ -71,6 +87,7 @@ public class WordNet {
 
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB) {
+        if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
         Set<Integer> v = word2Ids.get(nounA);
         Set<Integer> w = word2Ids.get(nounB);
         return sap.length(v, w);
@@ -79,6 +96,7 @@ public class WordNet {
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB) {
+        if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException();
         Set<Integer> v = word2Ids.get(nounA);
         Set<Integer> w = word2Ids.get(nounB);
         int ancesterId = sap.ancestor(v, w);
@@ -87,6 +105,8 @@ public class WordNet {
 
     // do unit testing of this class
     public static void main(String[] args) {
+        WordNet wordnet = new WordNet(args[0], args[1]);
+        StdOut.println(wordnet.sap("macromolecule", "supermolecule"));
 
     }
 }

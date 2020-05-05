@@ -20,7 +20,7 @@ public class SAP {
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
         if (G == null) throw new IllegalArgumentException();
-        digraph = G;
+        digraph = new Digraph(G);
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
