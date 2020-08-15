@@ -66,8 +66,8 @@ public class BoggleSolver {
 
         while (!stack.isEmpty()) {
             position = stack.removeLast();
-            row = position / nRow;
-            col = position % nRow;
+            row = position / nCol;
+            col = position % nCol;
             visited = stackVisited.removeLast();
             visited.set(position, Boolean.TRUE);
             current = stackNodes.removeLast();
@@ -75,7 +75,7 @@ public class BoggleSolver {
             for (int i = row - 1; i < row + 2; ++i) {
                 for (int j = col - 1; j < col + 2; ++j) {
                     if (!checkValidity(i, j, board)) continue;
-                    int newPosition = i * nRow + j;
+                    int newPosition = i * nCol + j;
                     if (newPosition == position) continue;
                     if (visited.get(newPosition)) continue;
                     char nextChar = board.getLetter(i, j);
