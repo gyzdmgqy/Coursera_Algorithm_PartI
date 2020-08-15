@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 public class BoggleSolver {
-    private Trie dictTrie;
+    private final Trie dictTrie;
 
 
     // Initializes the data structure using the given array of strings as the dictionary.
@@ -56,6 +56,7 @@ public class BoggleSolver {
         prefix.append(currentChar);
         if (currentChar == 'Q') {
             current = current.get('U');
+            if (current == null) return;
             prefix.append('U');
         }
         int position = col + row * nCol;
@@ -85,6 +86,7 @@ public class BoggleSolver {
                         nextWord.append(nextChar);
                         if (nextChar == 'Q') {
                             next = next.get('U');
+                            if (next == null) continue;
                             nextWord.append('U');
                         }
                         if (next.getScore() > 0) validWords.add(nextWord.toString());

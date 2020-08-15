@@ -7,7 +7,7 @@
 import java.util.HashMap;
 
 public class Trie {
-    private Node root;
+    private final Node root;
 
     Trie() {
         root = new Node(' ', 0);
@@ -54,7 +54,7 @@ public class Trie {
 
 
     static class Node {
-        private char c;
+        private final char c;
         private int score;
         private HashMap<Character, Node> children = new HashMap<>();
 
