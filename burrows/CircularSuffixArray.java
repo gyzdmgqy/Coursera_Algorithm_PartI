@@ -34,7 +34,7 @@ public class CircularSuffixArray {
             else currentRow++;
         }
         sort(low, lessthan - 1, position);
-        if (benchmark > 0) sort(lessthan, greatthan, position + 1);
+        if (benchmark >= 0) sort(lessthan, greatthan, position + 1);
         sort(greatthan + 1, high, position);
     }
 
@@ -62,7 +62,18 @@ public class CircularSuffixArray {
 
     // unit testing (required)
     public static void main(String[] args) {
-        String s = "ABRACADABRA!";
+        char[] inputs = new char[10];
+        inputs[0] = 0x69;
+        inputs[1] = 0x00;
+        inputs[2] = 0x4f;
+        inputs[3] = 0x6e;
+        inputs[4] = 0x76;
+        inputs[5] = 0x00;
+        inputs[6] = 0x0b;
+        inputs[7] = 0x31;
+        inputs[8] = 0x66;
+        inputs[9] = 0x7f;
+        String s = new String(inputs);
         CircularSuffixArray circularSuffixArray = new CircularSuffixArray(s);
         BinaryStdOut.write("length: " + circularSuffixArray.length() + "\n");
         for (int i = 0; i < circularSuffixArray.length(); i++) {
