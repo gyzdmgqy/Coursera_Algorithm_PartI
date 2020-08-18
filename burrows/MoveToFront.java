@@ -40,7 +40,7 @@ public class MoveToFront {
         char[] characters = new char[R];
         for (char i = 0; i < R; ++i) characters[i] = i;
         while (!BinaryStdIn.isEmpty()) {
-            int inputCode = BinaryStdIn.readInt();
+            int inputCode = BinaryStdIn.readInt(8);
             char outputChar = characters[inputCode];
             BinaryStdOut.write(outputChar);
             moveFront(characters, inputCode);
