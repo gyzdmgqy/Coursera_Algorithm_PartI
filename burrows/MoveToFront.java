@@ -29,10 +29,8 @@ public class MoveToFront {
 
     private static void moveFront(char[] characters, int index) {
         char key = characters[index];
-        char pre = characters[0];
-        for (int i = 1; i <= index; ++i) {
-            characters[i] = pre;
-            if (i < R - 1) pre = characters[i + 1];
+        for (int i = index; i > 0; --i) {
+            characters[i] = characters[i - 1];
         }
         characters[0] = key;
     }
